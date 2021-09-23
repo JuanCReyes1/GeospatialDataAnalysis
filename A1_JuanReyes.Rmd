@@ -1,0 +1,127 @@
+---
+title: "GDAA 1000 Assignment 1"
+author: "Juan C. Reyes - W0465200@campus.nscc.ca"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# GDAA 1000 Fundamentals of Geospatial Data Analytics 
+
+## Let's begin by importing the dataset 'mtcars'.
+### Reference: [1974 US Magazine Motor Trend Car Road Tests](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html) 
+
+
+```{r}
+data("mtcars")
+#Assigning the data to a variable
+carsdf <- mtcars
+```
+
+Let's investigate the class of the data set:
+```{r}
+class(carsdf)
+```
+As we can see, the "mtcars" data set is stored as a data frame object in memory.
+
+Let's take a quick first glance of the data set:
+
+```{r}
+head(carsdf)
+```
+
+From this first glance of the data frame we can see that there are `r dim(carsdf)[1] ` unique rows (cars) and  
+`r dim(carsdf)[2] ` distinct columns (variables/attributes).
+
+Let's take a quick look at each of our unique variables:
+```{r}
+names(carsdf)
+```
+We have `r dim(carsdf)[2] ` unique variables which each describe individual properties to each vehicle (row).
+\newpage
+It is important to get an understanding of the structure of this data set. 
+Let's take a close look at the data type each variable represents:
+
+```{r}
+str(carsdf)
+```
+As we can see, every variable is a numeric data type!
+
+Let's see what the average horsepower of the vehicles tested is:
+
+```{r}
+mean(carsdf$hp)
+```
+Furthermore, the mean displacement in the first five vehicles of the data set is given by:
+
+```{r}
+mean(carsdf[1:5,]$disp)
+
+```
+
+\newpage
+
+Now we investigate filtering our data such that we only display the vehicles that have more than 4 cylinders and less than 21 mpg.
+
+We can use the filter function in `dplyr` to determine this:
+
+```{r}
+dplyr::filter(carsdf, cyl > 4 & mpg < 21)
+```
+Similarly, we could use `dplyr` to apply its pipe operator `%>%`:
+
+```{r warning=FALSE, message=FALSE}
+library(dplyr)
+carsdf %>% filter(cyl > 4, mpg < 21 )
+```
+
+Note the use of the pipe operator `%>%` which forwards a value (or in our case, a data frame) into the following function. It also serves as a way of['decreasing development time and improve readability and maintainability of code.' (click for source)](https://uc-r.github.io/pipe)
+
+Now we can determine the number of levels in the cylinders variable by using `as.factor()`:
+```{r}
+as.factor(carsdf$cyl)
+```
+The unique factors for the cylinders variable are 4,6, and 8.
+
+Lastly, we create a scatterplot matrix to display the relationship between the miles per gallon (mpg), cylinders(cyl), displacement (disp), and horsepower (hp) attribute data for just the first 
+`r nrow(unique(first_twenty <- head(carsdf,20)))` cars of the dataset. [(Click here for the pairs() function documentation).](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/pairs)
+
+It is helpful to recall that the first twenty elements of this dataset should be unique, and thus should be classified as factors. We double check:
+
+```{r}
+first_twenty <- head(carsdf,20)
+
+num_unique_cars <- nrow(unique(first_twenty))
+
+each_car <- factor(rownames(first_twenty))
+
+print(num_unique_cars)
+
+```
+
+As we can see the number of unique cars is `r num_unique_cars` and the class structure is set to `r class(each_car)`. Let's look at the cars we are about to compare!
+
+```{r}
+each_car
+```
+
+We have 20 unique levels (as expected). We can use these to display each vehicle as a unique colour on the graph like in the example shown *[here!](https://r-charts.com/correlation/pairs/)*
+
+```{r echo=FALSE}
+
+pairs(first_twenty[,c("mpg","cyl","disp","hp")], 
+      pch = 22, 
+      cex=1.0,
+      cex.labels =pi,
+      font.labels = 3, 
+      main = "Scatterplot Matrix",
+      gap=0.5,row1attop = F,
+      bg = hcl.colors(num_unique_cars,"Temps")[each_car],
+      col = hcl.colors(num_unique_cars, "Temps")[each_car])
+
+```
+
+This is an interesting graph which immediately displays various interesting aspects of our data set. There appears to be several linear correlations that we can infer from regression tools. For instance, there appears to be a negative correlation between vehicle horsepower and the number of cylinders to that of the miles per gallon obtainable by the vehicle. It seems reasonable to believe that the more horsepower or cylinders a vehicle possesses, the less miles per gallon it is able to attain. This would be an interesting analysis for further study of this data set.
+
+
+
