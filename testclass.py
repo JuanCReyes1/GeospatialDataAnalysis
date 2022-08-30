@@ -1,5 +1,3 @@
-
-import pandas as pd 
 class create_cluster_map:
 
     def __init__(self,epsilon,min_samples):
@@ -154,6 +152,8 @@ class create_cluster_map:
 
     
     def run_map(self):
+
+        
         gdf = self.import_data()
         d = self.create_gdf_dictionary(gdf)
         provinces = self.obtain_provinces(d)
